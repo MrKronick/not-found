@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title data-i18n="page_title">Страница не настроена</title>
+    <title data-i18n="page_title">Сайт переехал</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -20,29 +20,39 @@
             padding: 1rem;
         }
         .container {
-            padding: 2rem 2.5rem;
+            padding: 2.5rem;
             background: #fff;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            max-width: 540px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            max-width: 500px;
             width: 100%;
             position: relative;
         }
-        h1 {
-            font-size: 2.5rem;
-            margin: 0 0 1rem;
-        }
-        p {
+        h1 { font-size: 2rem; margin: 0 0 1rem; color: #0d6efd; }
+        p { font-size: 1.1rem; line-height: 1.6; color: #495057; margin: 0.5rem 0 1.5rem; }
+        .domain-old { font-weight: bold; color: #dc3545; text-decoration: line-through; }
+        .domain-new { font-weight: bold; color: #198754; }
+        
+        .btn {
+            display: inline-block;
+            background: #0d6efd;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
             font-size: 1.1rem;
-            line-height: 1.6;
-            color: #495057;
-            margin: 0.5rem 0;
+            transition: background 0.2s;
         }
-        .subdomain {
-            font-weight: bold;
-            color: #d63384;
-            word-break: break-all;
+        .btn:hover { background: #0b5ed7; }
+        
+        .timer {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #6c757d;
         }
+        
+        /* Переключатель языка */
         .lang-switch {
             position: absolute;
             top: 1rem;
@@ -54,86 +64,105 @@
             border-radius: 8px;
         }
         .lang-switch button {
-            border: none;
-            background: transparent;
-            padding: 4px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #495057;
+            border: none; background: transparent; padding: 4px 10px;
+            border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+            font-weight: 600; color: #495057; font-family: inherit;
             transition: background 0.2s, color 0.2s;
-            font-family: inherit;
         }
         .lang-switch button:hover { background: #dee2e6; }
-        .lang-switch button.active {
-            background: #0d6efd;
-            color: #fff;
-        }
+        .lang-switch button.active { background: #0d6efd; color: #fff; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="lang-switch" role="group" aria-label="Language">
+        <div class="lang-switch">
             <button type="button" data-lang="ru">RU</button>
             <button type="button" data-lang="en">EN</button>
         </div>
-
-        <h1>🚧</h1>
-        <p data-i18n="msg_nothing">
-            Извините, на поддомене <span class="subdomain" id="hostname"></span> пока ничего нет.
+        
+        <h1>🚀</h1>
+        <p data-i18n="msg_text">
+            Наш сайт переехал на новый адрес!<br>
+            <span class="domain-old">customtpa.mrkronick.ru</span><br>⬇️<br>
+            <span class="domain-new">customtpa.mrkronick.site</span>
         </p>
-        <p data-i18n="msg_soon">Пожалуйста, вернитесь позже.</p>
+        
+        <a href="https://customtpa.mrkronick.site" id="redirectBtn" class="btn" data-i18n="btn_go">Перейти сейчас</a>
+        
+        <div class="timer">
+            <span data-i18n="msg_auto">Автоматический переход через</span> 
+            <strong id="countdown">5</strong> <span data-i18n="msg_sec">сек.</span>
+        </div>
     </div>
 
     <script>
+        // --- 1. ЛОГИКА ПЕРЕАДРЕСАЦИИ ---
+        const newDomain = 'https://customtpa.mrkronick.site';
+        
+        // Сохраняем текущий путь и параметры (например, /profile?id=1)
+        const fullNewUrl = newDomain + window.location.pathname + window.location.search + window.location.hash;
+        
+        // Обновляем ссылку на кнопке, чтобы при ручном клике тоже сохранялся путь
+        const redirectBtn = document.getElementById('redirectBtn');
+        redirectBtn.href = fullNewUrl;
+
+        // Запускаем таймер
+        let timeLeft = 5;
+        const countdownEl = document.getElementById('countdown');
+        
+        const timer = setInterval(() => {
+            timeLeft--;
+            countdownEl.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                window.location.href = fullNewUrl;
+            }
+        }, 1000);
+
+        // --- 2. ПЕРЕВОД (i18n) ---
         const translations = {
             ru: {
-                page_title: "Страница не настроена",
-                msg_nothing: 'Извините, на поддомене <span class="subdomain" id="hostname"></span> пока ничего нет.',
-                msg_soon: "Пожалуйста, вернитесь позже."
+                page_title: "Сайт переехал",
+                msg_text: 'Наш сайт переехал на новый адрес!<br><span class="domain-old">customtpa.mrkronick.ru</span><br>⬇️<br><span class="domain-new">customtpa.mrkronick.site</span>',
+                btn_go: "Перейти сейчас",
+                msg_auto: "Автоматический переход через",
+                msg_sec: "сек."
             },
             en: {
-                page_title: "Page not configured",
-                msg_nothing: 'Sorry, there is nothing here yet on the subdomain <span class="subdomain" id="hostname"></span>.',
-                msg_soon: "Please come back later."
+                page_title: "Site has moved",
+                msg_text: 'Our site has moved to a new address!<br><span class="domain-old">customtpa.mrkronick.ru</span><br>⬇️<br><span class="domain-new">customtpa.mrkronick.site</span>',
+                btn_go: "Go now",
+                msg_auto: "Auto-redirecting in",
+                msg_sec: "sec."
             }
         };
-
+        
         function detectLang() {
             const saved = localStorage.getItem("lang");
             if (saved && translations[saved]) return saved;
             const browserLang = (navigator.language || "ru").slice(0, 2).toLowerCase();
             return translations[browserLang] ? browserLang : "ru";
         }
-
+        
         function applyLang(lang) {
             const dict = translations[lang] || translations.ru;
-
             document.title = dict.page_title;
             document.documentElement.lang = lang;
-
             document.querySelectorAll("[data-i18n]").forEach(el => {
                 const key = el.getAttribute("data-i18n");
-                if (dict[key] !== undefined) {
-                    el.innerHTML = dict[key];
-                }
+                if (dict[key] !== undefined) el.innerHTML = dict[key];
             });
-
             document.querySelectorAll(".lang-switch button").forEach(btn => {
                 btn.classList.toggle("active", btn.dataset.lang === lang);
             });
-
-            const hostEl = document.getElementById("hostname");
-            if (hostEl) hostEl.textContent = window.location.hostname;
-
             localStorage.setItem("lang", lang);
         }
-
+        
         document.querySelectorAll(".lang-switch button").forEach(btn => {
             btn.addEventListener("click", () => applyLang(btn.dataset.lang));
         });
-
+        
+        // Запускаем перевод при загрузке
         applyLang(detectLang());
     </script>
 </body>
